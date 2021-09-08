@@ -10,6 +10,12 @@ Github action that parses .tool-versions into the environment.
           uppercase: 'true'
           postfix: '_tool_versions'
           filename: '.tool-versions'
+          
+      # Sometime later in the same job...
+
+      - uses: mskelton/setup-yarn@v1
+        with:
+          node-version: ${{ env.NODEJS_TOOL_VERSION }}
 ```
 
 All inputs are optional, inputs shown are defaults. by default this command appends `_tool_version` to the name of each entry in the .tool-versions file, uppercases it, and adds it to GITHUB_ENV
