@@ -1,0 +1,32 @@
+name: 'Parse .tool-versions'
+description: 'Parse .tool-versions file, setting versions in env variables'
+inputs:
+  uppercase:
+    description: "should the variables be uppercase?"
+    required: false
+    default: "true"
+  postfix:
+    description: "postfix applied to the tool version name. default is _tool_version"
+    required: false
+    default: "_tool_version"
+  filename:
+    description: ".tool-versions filename. default .tool-versions"
+    required: false
+    default: '.tool-versions'
+
+runs:
+    using: "composite"
+    steps:
+      - name: Retrieve version
+        id: version
+        shell: bash
+        run: |
+          while IFS= read -r line; do
+            NAME="$(echo $line | cut -d' ' -f1)${{inputs.postfix}}"
+            if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
+            
+            VALUE=$(echo $line | cut -d' ' -f2-)
+
+            echo "$NAME=$VALUE" >> $GITHUB_ENV
+          done < ${{inputs.filename}}
+  
