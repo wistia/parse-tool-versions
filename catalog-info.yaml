@@ -8,6 +8,8 @@ metadata:
   annotations:
     github.com/project-slug: wistia/parse-tool-versions
     backstage.io/techdocs-ref: dir:.
+  tags:
+    - github-action
 spec:
   type: library
   owner: app-platform
