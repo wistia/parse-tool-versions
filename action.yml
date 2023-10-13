@@ -5,10 +5,12 @@ inputs:
     description: "should the variables be uppercase?"
     required: false
     default: "true"
-  postfix:
-    description: "postfix applied to the tool version name. default is _tool_version"
+  prefix:
+    description: "prefix applied before the tool version name (eg. tool_version_)"
     required: false
-    default: "_tool_version"
+  postfix:
+    description: "postfix applied after the tool version name (eg. _tool_version)"
+    required: false
   filename:
     description: ".tool-versions filename. default .tool-versions"
     required: false
@@ -27,7 +29,12 @@ runs:
         run: |
           while IFS= read -r line; do
             if [[ $line != \#* ]]; then
-              NAME="$(echo $line | cut -d' ' -f1)${{inputs.postfix}}"
+              NAME="$(echo $line | cut -d' ' -f1)"
+              if [ "${{inputs.name_position}}" == "prefix" ]; then
+                NAME="${{inputs.prefix}}$NAME"
+              elif [ "${{inputs.name_position}}" == "postfix" ]; then
+                NAME="$NAME${{inputs.postfix}}"
+              fi
               if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
 
               VALUE=$(echo $line | cut -d' ' -f2-)
