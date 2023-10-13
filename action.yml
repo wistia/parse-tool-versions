@@ -26,11 +26,12 @@ runs:
         shell: bash
         run: |
           while IFS= read -r line; do
-            NAME="$(echo $line | cut -d' ' -f1)${{inputs.postfix}}"
-            if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
-            
-            VALUE=$(echo $line | cut -d' ' -f2-)
+            if [[ $line != \#* ]]; then
+              NAME="$(echo $line | cut -d' ' -f1)${{inputs.postfix}}"
+              if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
 
-            echo "$NAME=$VALUE" >> $GITHUB_ENV
+              VALUE=$(echo $line | cut -d' ' -f2-)
+
+              echo "$NAME=$VALUE" >> $GITHUB_ENV
+            fi
           done < ${{inputs.filename}}
-  
