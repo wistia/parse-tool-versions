@@ -5,20 +5,20 @@ Github action that parses .tool-versions into the environment.
 
 ```
       - name: Parse .tool-versions
-        uses: wistia/parse-tool-versions@v1.0
+        uses: wistia/parse-tool-versions@v2.0.0
         with:
           uppercase: 'true'
-          postfix: '_tool_versions'
+          prefix: 'tool_version_'
           filename: '.tool-versions'
-          
-      # Sometime later in the same job...
 
-      - uses: mskelton/setup-yarn@v1
+      # Sometime later in the same job...
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODEJS_TOOL_VERSION }}
+          node-version: ${{ env.TOOL_VERSION_NODEJS }}
 ```
 
-All inputs are optional, inputs shown are defaults. by default this command appends `_tool_version` to the name of each entry in the .tool-versions file, uppercases it, and adds it to GITHUB_ENV
+This command reads `.tool-versions` (or an alternate text file provided in `filename` input), ignores comments with leading `#` and outputs each tool name (with or without optional prefix/postfix) into `GITHUB_ENV`. All inputs are optional; by default, tool names & prefix/postfix are uppercased.
 
 ## Inputs
 
@@ -26,10 +26,14 @@ All inputs are optional, inputs shown are defaults. by default this command appe
 
 set this to any string besides 'true' to use `snake_case` instead of `MACRO_CASE`
 
+### Prefix
+
+use to control what is prepended to the tool name (eg. `tool_version_` w/ ruby would emit `TOOL_VERSION_RUBY`)
+
 ### Postfix
 
-use to control what is appended to the tool name. `_tool_version` was chosen in the unlikely event you already have a `{tool}_VERSION` flag set; you could set `postfix` to `_version` if you wish.
+use to control what is appended to the tool name (eg. `_tool_version` w/ ruby would emit `RUBY_TOOL_VERSION`)
 
 ### Filename
 
-The filename read from. This can be a path
+The filename read from; this can be a path
