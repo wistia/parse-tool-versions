@@ -39,6 +39,6 @@ runs:
 
               VALUE=$(echo $line | cut -d' ' -f2-)
 
-              echo "$NAME=$VALUE" >> $GITHUB_ENV
+              echo "${NAME/-/_}=$VALUE" >> $GITHUB_ENV
             fi
           done < ${{inputs.filename}}
