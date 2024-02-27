@@ -12,7 +12,7 @@ inputs:
     description: "postfix applied after the tool version name (eg. _tool_version)"
     required: false
   filename:
-    description: ".tool-versions filename. default .tool-versions"
+    description: ".tool-versions filename. default is `.tool-versions`"
     required: false
     default: '.tool-versions'
 
@@ -30,9 +30,9 @@ runs:
           while IFS= read -r line; do
             if [[ $line != \#* ]]; then
               NAME="$(echo $line | cut -d' ' -f1)"
-              if [ "${{inputs.name_position}}" == "prefix" ]; then
+              if [ -n "${{inputs.prefix}}" ]; then
                 NAME="${{inputs.prefix}}$NAME"
-              elif [ "${{inputs.name_position}}" == "postfix" ]; then
+              elif [ -n "${{inputs.postfix}}" ]; then
                 NAME="$NAME${{inputs.postfix}}"
               fi
               if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
