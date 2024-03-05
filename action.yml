@@ -1,6 +1,10 @@
 name: 'Parse .tool-versions'
 description: 'Parse .tool-versions file, setting versions in env variables'
 inputs:
+  filename:
+    description: ".tool-versions filename. default is `.tool-versions`"
+    required: false
+    default: '.tool-versions'
   uppercase:
     description: "should the variables be uppercase?"
     required: false
@@ -11,34 +15,16 @@ inputs:
   postfix:
     description: "postfix applied after the tool version name (eg. _tool_version)"
     required: false
-  filename:
-    description: ".tool-versions filename. default is `.tool-versions`"
-    required: false
-    default: '.tool-versions'
 
 branding:
   icon: list
   color: purple
 
 runs:
-    using: "composite"
-    steps:
-      - name: Retrieve version
-        id: version
-        shell: bash
-        run: |
-          while IFS= read -r line; do
-            if [[ $line != \#* ]]; then
-              NAME="$(echo $line | cut -d' ' -f1)"
-              if [ -n "${{inputs.prefix}}" ]; then
-                NAME="${{inputs.prefix}}$NAME"
-              elif [ -n "${{inputs.postfix}}" ]; then
-                NAME="$NAME${{inputs.postfix}}"
-              fi
-              if [ "${{inputs.uppercase}}" == "true" ]; then NAME="$(echo $NAME | tr [:lower:] [:upper:])"; fi
-
-              VALUE=$(echo $line | cut -d' ' -f2-)
-
-              echo "${NAME/-/_}=$VALUE" >> $GITHUB_ENV
-            fi
-          done < ${{inputs.filename}}
+  using: "composite"
+  steps:
+    - name: Retrieve version
+      id: version
+      shell: bash
+      run: |
+        env FILENAME=${{ inputs.filename }} UPPERCASE=${{ inputs.uppercase }} PREFIX=${{ inputs.prefix }} POSTFIX=${{ inputs.postfix }} bash ${GITHUB_ACTION_PATH}/parse_tool_versions.sh >> $GITHUB_ENV
